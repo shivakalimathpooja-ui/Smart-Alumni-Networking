@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartAlumni — Connect. Mentor. Grow.</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- MODALS -->
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal">
+      <div class="auth-logo">
+        <div class="logo">SmartAlumni</div>
+        <p>Sign in to your account</p>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group"><label>Password</label><input type="password" id="login-password"
+          placeholder="••••••••" /></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()" id="login-btn">Sign In</button>
+      <div class="auth-switch">Don't have an account? <a
+          onclick="closeModal('modal-login');openModal('modal-register')">Register</a></div>
+      <div class="auth-switch" style="margin-top:8px;"><a
+          onclick="closeModal('modal-login');openModal('modal-forgot')">Forgot password?</a></div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal-overlay" id="modal-register">
+    <div class="modal">
+      <div class="auth-logo">
+        <div class="logo">SmartAlumni</div>
+        <p>Create your account</p>
+      </div>
+      <div class="form-group">
+        <label>I am a</label>
+        <div class="role-select">
+          <button class="role-btn active" onclick="setRegRole('STUDENT',this)"><span
+              class="role-icon">🎓</span>Student</button>
+          <button class="role-btn" onclick="setRegRole('ALUMNI',this)"><span class="role-icon">💼</span>Alumni</button>
+          <button class="role-btn" onclick="setRegRole('ADMIN',this)"><span class="role-icon">🛡️</span>Admin</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" placeholder="John Doe" /></div>
+        <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="you@example.com" />
+        </div>
+      </div>
+      <div class="form-group"><label>Password</label><input type="password" id="reg-password"
+          placeholder="Min 6 characters" /></div>
+      <div class="form-row" id="reg-extra-student">
+        <div class="form-group"><label>Department</label><input type="text" id="reg-dept"
+            placeholder="Computer Science" /></div>
+        <div class="form-group"><label>Graduation Year</label><input type="text" id="reg-grad" placeholder="2026" />
+        </div>
+      </div>
+      <div id="reg-extra-alumni" style="display:none;">
+        <div class="form-row">
+          <div class="form-group"><label>Company</label><input type="text" id="reg-company" placeholder="Google" />
+          </div>
+          <div class="form-group"><label>Job Title</label><input type="text" id="reg-job"
+              placeholder="Software Engineer" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Department</label><input type="text" id="reg-dept2"
+              placeholder="Computer Science" /></div>
+          <div class="form-group"><label>Graduation Year</label><input type="text" id="reg-grad2" placeholder="2021" />
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Create Account</button>
+      <div class="auth-switch">Already have an account? <a
+          onclick="closeModal('modal-register');openModal('modal-login')">Sign In</a></div>
+    </div>
+  </div>
+
+  <!-- Forgot Password -->
+  <div class="modal-overlay" id="modal-forgot">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-forgot')">✕</span>
+      <h3>Reset Password</h3>
+      <div class="form-group"><label>Email</label><input type="email" id="forgot-email" placeholder="your@email.com" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doForgotPassword()">Send Reset Link</button>
+    </div>
+  </div>
+
+  <!-- Create Event -->
+  <div class="modal-overlay" id="modal-event">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-event')">✕</span>
+      <h3 id="event-modal-title">Create Event</h3>
+      <div class="form-group"><label>Title</label><input type="text" id="event-title"
+          placeholder="Annual Alumni Meet" /></div>
+      <div class="form-group"><label>Description</label><textarea id="event-desc"
+          placeholder="Event details..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Location</label><input type="text" id="event-loc"
+            placeholder="Auditorium / Online" /></div>
+        <div class="form-group"><label>Date</label><input type="date" id="event-date" /></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveEvent()" id="event-save-btn">Create Event</button>
+    </div>
+  </div>
+
+  <!-- Post Job -->
+  <div class="modal-overlay" id="modal-job">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-job')">✕</span>
+      <h3>Post Job Opportunity</h3>
+      <div class="form-group"><label>Job Title</label><input type="text" id="job-title"
+          placeholder="Frontend Developer" /></div>
+      <div class="form-group"><label>Company</label><input type="text" id="job-company" placeholder="Acme Inc." /></div>
+      <div class="form-group"><label>Description</label><textarea id="job-desc"
+          placeholder="Job responsibilities, requirements..."></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="postJob()">Post Job</button>
+    </div>
+  </div>
+
+  <!-- Mentorship Request -->
+  <div class="modal-overlay" id="modal-mentorship">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-mentorship')">✕</span>
+      <h3>Request Mentorship</h3>
+      <div class="form-group"><label>Mentor ID</label><input type="number" id="mentor-id" placeholder="Alumni ID" />
+      </div>
+      <div class="form-group"><label>Topic</label><input type="text" id="mentor-topic"
+          placeholder="Career guidance, Resume review..." /></div>
+      <div class="form-group"><label>Message</label><textarea id="mentor-msg"
+          placeholder="Introduce yourself and explain what you're looking for..."></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="sendMentorshipRequest()">Send Request</button>
+    </div>
+  </div>
+
+  <!-- Accept & Schedule -->
+  <div class="modal-overlay" id="modal-schedule">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-schedule')">✕</span>
+      <h3>Accept & Schedule Session</h3>
+      <input type="hidden" id="schedule-mentorship-id" />
+      <div class="form-group"><label>Meeting Type</label>
+        <select id="schedule-type">
+          <option value="Online">Online</option>
+          <option value="In-Person">In-Person</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Meeting Link / Location</label><input type="text" id="schedule-link"
+          placeholder="https://meet.google.com/..." /></div>
+      <div class="form-group"><label>Scheduled At</label><input type="datetime-local" id="schedule-at" /></div>
+      <button class="btn btn-primary btn-full" onclick="acceptAndSchedule()">Confirm & Schedule</button>
+    </div>
+  </div>
+
+  <!-- Feedback -->
+  <div class="modal-overlay" id="modal-feedback">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-feedback')">✕</span>
+      <h3>Leave Feedback</h3>
+      <input type="hidden" id="feedback-id" />
+      <div class="form-group"><label>Rating (1–5)</label><input type="number" id="feedback-rating" min="1" max="5"
+          placeholder="5" /></div>
+      <div class="form-group"><label>Feedback</label><textarea id="feedback-msg"
+          placeholder="How was your session?"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+  </div>
+
+  <!-- Edit Profile -->
+  <div class="modal-overlay" id="modal-profile">
+    <div class="modal">
+      <span class="modal-close" onclick="closeModal('modal-profile')">✕</span>
+      <h3>Edit Profile</h3>
+      <div class="form-group"><label>Bio</label><textarea id="p-bio" placeholder="Tell us about yourself..."></textarea>
+      </div>
+      <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="p-skills"
+          placeholder="Java, Spring Boot, React" /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Current Company</label><input type="text" id="p-company" placeholder="Google" />
+        </div>
+        <div class="form-group"><label>Current Role</label><input type="text" id="p-role"
+            placeholder="Software Engineer" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Experience</label><input type="text" id="p-exp" placeholder="3 years" /></div>
+        <div class="form-group"><label>Resume URL</label><input type="text" id="p-resume" placeholder="https://..." />
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveProfile()">Save Profile</button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div class="logo" onclick="showPage('home')">SmartAlumni</div>
+      <div class="nav-links" id="nav-links">
+        <button class="nav-link" onclick="showPage('home')">Home</button>
+        <button class="nav-link" id="nav-alumni" onclick="showPage('alumni')" style="display:none">Alumni</button>
+        <button class="nav-link" id="nav-events" onclick="showPage('events')" style="display:none">Events</button>
+        <button class="nav-link" id="nav-jobs" onclick="showPage('jobs')" style="display:none">Jobs</button>
+        <button class="nav-link" id="nav-mentorship" onclick="showPage('mentorship')"
+          style="display:none">Mentorship</button>
+        <button class="nav-link" id="nav-profile" onclick="showPage('profile')" style="display:none">Profile</button>
+        <button class="nav-link" id="nav-admin" onclick="showPage('admin')" style="display:none">Admin</button>
+      </div>
+      <div class="nav-auth" id="nav-auth">
+        <button class="btn btn-ghost btn-sm" onclick="openModal('modal-login')">Sign In</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-register')">Register</button>
+      </div>
+      <div class="nav-user" id="nav-user" style="display:none">
+        <div class="avatar" id="nav-avatar">U</div>
+        <span class="nav-user-name" id="nav-user-name"></span>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()">Logout</button>
+      </div>
+      <button class="hamburger" onclick="toggleMobile()">☰</button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <button class="nav-link" onclick="showPage('home');closeMobile()">🏠 Home</button>
+    <button class="nav-link" id="mob-alumni" onclick="showPage('alumni');closeMobile()" style="display:none">👥
+      Alumni</button>
+    <button class="nav-link" id="mob-events" onclick="showPage('events');closeMobile()" style="display:none">📅
+      Events</button>
+    <button class="nav-link" id="mob-jobs" onclick="showPage('jobs');closeMobile()" style="display:none">💼
+      Jobs</button>
+    <button class="nav-link" id="mob-mentorship" onclick="showPage('mentorship');closeMobile()" style="display:none">🤝
+      Mentorship</button>
+    <button class="nav-link" id="mob-profile" onclick="showPage('profile');closeMobile()" style="display:none">👤
+      Profile</button>
+    <button class="nav-link" id="mob-admin" onclick="showPage('admin');closeMobile()" style="display:none">🛡️
+      Admin</button>
+    <button class="nav-link" onclick="openModal('modal-login');closeMobile()" id="mob-login">Sign In</button>
+    <button class="nav-link" onclick="doLogout();closeMobile()" id="mob-logout" style="display:none">Logout</button>
+  </div>
+
+  <main>
+
+    <!-- ═══ HOME ═══ -->
+    <div class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-eyebrow"><span class="ping"></span> Alumni Network Platform</div>
+            <h1>Connect with<br /><span>Alumni. Mentors.</span><br />Opportunities.</h1>
+            <p class="hero-desc">SmartAlumni bridges the gap between students and alumni — enabling mentorship, job
+              connections, event networking, and lasting professional relationships.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" style="padding:14px 28px;font-size:16px;"
+                onclick="openModal('modal-register')">Get Started
+
+              </button>
+              <button class="btn btn-ghost" style="padding:14px 28px;font-size:16px;"
+                onclick="openModal('modal-login')">Sign In →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="container section">
+
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;">
+          <div class="card" style="border-top:3px solid var(--accent);">
+            <div style="font-size:32px;margin-bottom:12px;">🎓</div>
+            <h3 style="margin-bottom:8px;">Alumni Directory</h3>
+            <p style="font-size:14px;color:var(--muted2);line-height:1.6;">Search and filter alumni by company, skills,
+              location, department, and more. Build your professional network.</p>
+          </div>
+          <div class="card" style="border-top:3px solid var(--accent2);">
+            <div style="font-size:32px;margin-bottom:12px;">🤝</div>
+            <h3 style="margin-bottom:8px;">Mentorship</h3>
+            <p style="font-size:14px;color:var(--muted2);line-height:1.6;">Request 1-on-1 mentorship from industry
+              alumni. Get career guidance, resume reviews, and mock interviews.</p>
+          </div>
+          <div class="card" style="border-top:3px solid var(--accent3);">
+            <div style="font-size:32px;margin-bottom:12px;">💼</div>
+            <h3 style="margin-bottom:8px;">Job Board</h3>
+            <p style="font-size:14px;color:var(--muted2);line-height:1.6;">Exclusive job postings from alumni at top
+              companies. Apply directly and leverage your network connections.</p>
+          </div>
+          <div class="card" style="border-top:3px solid var(--gold);">
+            <div style="font-size:32px;margin-bottom:12px;">📅</div>
+            <h3 style="margin-bottom:8px;">Events</h3>
+            <p style="font-size:14px;color:var(--muted2);line-height:1.6;">Attend alumni meetups, webinars, workshops,
+              and networking events. Stay connected to your community.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ALUMNI ═══ -->
+    <div class="page" id="page-alumni">
+      <div class="container section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Alumni Directory</div>
+            <div class="section-sub">Search and connect with fellow alumni</div>
+          </div>
+        </div>
+        <div class="search-bar">
+          <input class="search-input" id="alumni-search" placeholder="🔍 Search by name, company, skills..."
+            oninput="filterAlumni()" />
+          <button class="btn btn-ghost btn-sm" onclick="loadAlumni()">Refresh</button>
+        </div>
+        <div class="filter-chips">
+          <button class="chip active" onclick="setAlumniFilter('all',this)">All</button>
+          <button class="chip" onclick="promptFilter('domain')">By Domain</button>
+          <button class="chip" onclick="promptFilter('skills')">By Skills</button>
+          <button class="chip" onclick="promptFilter('company')">By Company</button>
+          <button class="chip" onclick="promptFilter('location')">By Location</button>
+          <button class="chip" onclick="promptFilter('batch')">By Batch</button>
+          <button class="chip" onclick="promptFilter('department')">By Dept</button>
+        </div>
+        <div id="alumni-grid" class="card-grid">
+          <div class="loading-overlay"><span class="spinner"></span> Loading alumni...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ EVENTS ═══ -->
+    <div class="page" id="page-events">
+      <div class="container section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Events</div>
+            <div class="section-sub">Upcoming alumni meetups and events</div>
+          </div>
+          <div id="events-admin-btn" style="display:none;">
+            <button class="btn btn-primary btn-sm" onclick="openEventModal()">+ Create Event</button>
+          </div>
+        </div>
+        <div id="events-grid" class="card-grid">
+          <div class="loading-overlay"><span class="spinner"></span> Loading events...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ JOBS ═══ -->
+    <div class="page" id="page-jobs">
+      <div class="container section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Job Opportunities</div>
+            <div class="section-sub">Exclusive postings from alumni network</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="post-job-btn" onclick="openModal('modal-job')"
+            style="display:none">+ Post Job</button>
+        </div>
+        <div id="jobs-grid" class="card-grid">
+          <div class="loading-overlay"><span class="spinner"></span> Loading jobs...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MENTORSHIP ═══ -->
+    <div class="page" id="page-mentorship">
+      <div class="container section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Mentorship</div>
+            <div class="section-sub">Connect with mentors or manage your requests</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="req-mentorship-btn" onclick="openModal('modal-mentorship')"
+            style="display:none">+ Request Mentor</button>
+        </div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchMentorTab('student',this)" id="tab-student">My Requests</button>
+          <button class="tab" onclick="switchMentorTab('mentor',this)" id="tab-mentor">As Mentor</button>
+        </div>
+        <div id="mentorship-list">
+          <div class="loading-overlay"><span class="spinner"></span> Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PROFILE ═══ -->
+    <div class="page" id="page-profile">
+      <div class="container section">
+        <div class="profile-hero">
+          <div class="profile-avatar-big" id="profile-avatar-big">U</div>
+          <div class="profile-info">
+            <h2 id="profile-fullname">Your Name</h2>
+            <p id="profile-email-disp">email@example.com</p>
+            <p id="profile-role-disp" style="margin-top:4px;"></p>
+          </div>
+          <div style="margin-left:auto;">
+            <button class="btn btn-ghost btn-sm" onclick="openProfileModal()">✏️ Edit Profile</button>
+          </div>
+        </div>
+        <div class="profile-grid">
+          <div class="card">
+            <h4 style="margin-bottom:16px;font-size:16px;">Profile Details</h4>
+            <div id="profile-details">
+              <div class="loading-overlay" style="padding:30px;"><span class="spinner"></span></div>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="margin-bottom:16px;font-size:16px;">Skills</h4>
+            <div id="profile-skills-display" class="alumni-skills"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ADMIN ═══ -->
+    <div class="page" id="page-admin">
+      <div class="container section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Admin Dashboard</div>
+            <div class="section-sub">Manage users and platform data</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchAdminTab('users',this)">Users</button>
+          <button class="tab" onclick="switchAdminTab('events',this)">Events</button>
+          <button class="tab" onclick="switchAdminTab('jobs',this)">Jobs</button>
+        </div>
+        <div id="admin-content">
+          <div class="loading-overlay"><span class="spinner"></span> Loading...</div>
+        </div>
+      </div>
+    </div>
+    
+
+  </main>
+
+
+  <script src="script.js"></script>
+</body>
+
+</html>
